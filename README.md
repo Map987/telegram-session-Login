@@ -150,3 +150,127 @@ me是收藏夹
 TelegramClient
 https://docs.telethon.dev › sessions
 Session Files — Telethon 1.36.0 documentation 
+
+# 发送消息
+
+```
+from telethon import TelegramClient
+
+# 替换以下变量为您的Telegram API凭证
+API_ID = 'YOUR_API_ID'
+API_HASH = 'YOUR_API_HASH'
+# 替换以下变量为目标频道的ID
+target_channel_id = '-100SOMETHING'  # 确保这是正确的频道ID
+
+# 创建一个Telegram客户端实例
+client = TelegramClient("session_name", API_ID, API_HASH)
+
+async def main():
+    # 连接到Telegram
+    await client.start()
+    print("🎉 Connected")
+
+    # 指定本地文件的路径，确保路径中没有中文或空格
+    local_file_path = '/storage/emulated/0/Pictures/Telegram/IMG_20240917_175622_207.jpg'  # 替换为您的本地文件路径
+
+    # 尝试发送文件到目标频道
+    try:
+        await client.send_file(target_channel_id, local_file_path)
+        print("File sent to the target channel.")
+    except Exception as e:
+        print(f"Failed to send file: {e}")
+
+    # 保持客户端运行直到用户中断
+    await client.run_until_disconnected()
+
+if __name__ == "__main__":
+    with client:
+        client.loop.run_until_complete(main())
+```
+
+
+```
+ 
+from telethon import TelegramClient, events
+
+# 替换以下变量为您的Telegram API凭证
+API_ID = 'YOUR_API_ID'
+API_HASH = 'YOUR_API_HASH'
+
+# 创建一个Telegram客户端实例
+client = TelegramClient("bot", API_ID, API_HASH)
+
+async def main():
+    # 连接到Telegram
+    await client.start()
+    print("🎉 Connected")
+
+    # 注册一个事件处理器，监听所有新消息
+ #   @client.on(events.NewMessage())
+#    async def my_event_handler(event):
+        # 打印所有对话（私聊、群组和频道）的名称和ID
+        async for dialog in client.iter_dialogs():
+            if dialog.is_group or dialog.is_channel:
+                print(dialog.name, 'has ID', dialog.id)
+
+    # 保持客户端运行直到用户中断
+ #   await client.run_until_disconnected()
+
+if __name__ == "__main__":
+    with client:
+        client.loop.run_until_complete(main())
+ 
+```
+
+实时消息
+```
+import os
+from telethon import TelegramClient, events
+
+# 替换以下变量为您的Telegram API凭证和电话号码
+api_id = 'YOUR_API_ID'
+api_hash = 'YOUR_API_HASH'
+your_phone_number = 'YOUR_PHONE_NUMBER'
+
+# 替换以下变量为目标频道的ID
+target_channel_id = 'TARGET_CHANNEL_ID'  # 例如: -1001234567890
+source_channel_ids = ['SOURCE_CHANNEL_ID1', 'SOURCE_CHANNEL_ID2']  # 替换为源频道ID列表
+
+# 创建一个Telegram客户端实例
+client = TelegramClient('session_name', api_id, api_hash)
+
+async def main():
+    # 连接到Telegram
+    await client.start(your_phone_number)
+
+    # 注册一个事件处理器，监听来自指定频道的新消息
+    @client.on(events.NewMessage(chats=source_channel_ids))
+    async def handler2(event):
+        # 如果消息是分组的，则返回
+        if event.grouped_id:
+            return
+        
+        # 下载消息中的媒体文件
+        filepath = await client.download_media(event)
+        
+        # 如果下载成功，打印文件路径
+        if filepath:
+            print(f"Media downloaded to {filepath}")
+            
+            # 将消息文本和下载的媒体文件发送到目标频道
+            try:
+                await client.send_message(target_channel_id, event.text, file=filepath)
+                print("Message sent to target channel.")
+            except Exception as e:
+                print(f"Failed to send message: {e}")
+        else:
+            print("No media found to download.")
+
+    # 保持客户端运行直到用户中断
+    print("Listening for new messages from source channels...")
+    await client.run_until_disconnected()
+
+if __name__ == "__main__":
+    with client:
+        client.loop.run_until_complete(main())
+``
