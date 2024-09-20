@@ -10,7 +10,7 @@ from telethon.tl.types import MessageEntityTextUrl
 # 设置 TelegramClient，连接到 Telegram API
 from telethon.sync import TelegramClient
 from telethon.sessions import StringSession
-import qrcode
+#import qrcode
 #from PIL import Image
 import telethon
 from telethon import TelegramClient
