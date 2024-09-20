@@ -21,7 +21,21 @@ import os
 from datetime import datetime
 import time
 import urllib.parse
-output = ""
+ 
+import os
+
+# 定义要创建的文件夹名称
+folder_name = 'content'
+
+# 检查文件夹是否已存在
+if not os.path.exists(folder_name):
+    # 创建文件夹
+    os.mkdir(folder_name)
+    print(f'Folder "{folder_name}" created successfully.')
+else:
+    print(f'Folder "{folder_name}" already exists.')
+
+output = folder_name
 STRING = os.getenv('STRING')
 TELEGRAM_API_HASH = os.getenv('TELEGRAM_API_HASH')    
 TELEGRAM_API_ID = os.getenv('TELEGRAM_API_ID')    
@@ -53,30 +67,22 @@ import json
 from cryptography.fernet import Fernet
 import os
 async def export_to_json(filename, data):
-    encryption_key = os.getenv('TELEGRAM_API_HASH')
-    # 如果没有提供密钥，则抛出异常
-    if not encryption_key:
-        raise ValueError("No encryption key provided in environment variable 'ENCRYPTION_KEY'")
+def default_serializer(obj):
+    """处理无法序列化的对象"""
+    if isinstance(obj, PeerUser):
+        return str(obj)  # 或者返回你希望存储的任何其他信息
+    raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
 
-    # 使用提供的密钥初始化 Fernet 对象
-    fernet = Fernet(encryption_key)
+async def export_to_json(filename, data):
+    """
+    将数据导出到 JSON 文件中。
 
-    # 加密数据
-    encrypted_data = []
-    for item in data:
-        # 将字典转换为 JSON 字符串
-        json_str = json.dumps(item, ensure_ascii=False, indent=4, default=default_serializer)
-        # 加密 JSON 字符串
-        encrypted_str = fernet.encrypt(json_str.encode('utf-8'))
-        # 将加密后的数据添加到列表中
-        encrypted_data.append(encrypted_str)
-
-    # 将加密后的数据写入文件
-    with open(filename, 'wb') as f:
-        for encrypted_item in encrypted_data:
-            f.write(encrypted_item)
-            f.write(b'\n')  # 写入一个换行符以分隔加密后的数据项
-
+    参数:
+    filename -- 导出文件的名称
+    data -- 要导出的字典列表
+    """
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4, default=default_serializer)
 async def fetch_messages(channel_username):
     """
     获取指定频道的所有消息。
@@ -206,7 +212,71 @@ async def fetch_messages(channel_username):
         offset_id = history.messages[-1].id
         print(f"Fetched messages: {len(all_messages)}")
     return all_messages
-    
+###
+async def process_and_send_messages(client, json_data, target_chat):
+    grouped_files = []  # 存储具有grouped_id的文件路径和文本
+    current_grouped_id = None
+    caption = ''
+    contains_documents = False
+
+    # 按id排序条目
+    for item in sorted(json_data, key=lambda x: x['id']):
+        grouped_id = item.get('grouped_id')
+        links = item.get("links", '')
+        text = item.get('text', '')
+        text = f"{text} links:{links}" 
+        photo_path = item.get('photo', {}).get('path', None)
+        documents = item.get('documents', [])
+        document_path = documents[0].get('path', None) if documents else None
+   #     document_path = item.get('documents', [{}])[0].get('path', None)
+        if grouped_id is not None:
+            # 如果grouped_id发生变化，发送上一个grouped_id的文件
+            print(grouped_id)
+            if current_grouped_id is not None and grouped_id != current_grouped_id:
+                print(grouped_files)
+                await client.send_file(target_chat, file=grouped_files, caption=caption, force_document=contains_documents)
+                grouped_files = []  # 重置列表
+                caption = ''
+                contains_documents = False
+
+            # 将文件路径和文本添加到列表中
+            if photo_path:
+                grouped_files.append(photo_path)
+            if document_path:
+                grouped_files.append(document_path)
+                contains_documents = True
+            if text:
+                caption = text
+            current_grouped_id = grouped_id
+            
+        else:
+            # 发送上一个grouped_id的文件（如果有）
+            if grouped_files:
+                    print(grouped_files)
+                    await client.send_file(target_chat, file=grouped_files, caption=caption, force_document=contains_documents)
+                    grouped_files = []  # 重置列表
+                    caption = ''
+                    contains_documents = False
+                    current_grouped_id = grouped_id
+
+            # 发送当前没有grouped_id的条目
+            if photo_path and text:
+                await client.send_file(target_chat, file=photo_path, caption=text)
+            elif text:
+                await client.send_message(target_chat, text)
+            elif photo_path:
+                await client.send_message(target_chat, file=photo_path)
+            elif document_path and text:
+                await client.send_file(target_chat, file=document_path, caption=text, force_document=True)
+            elif document_path:
+                await client.send_file(target_chat, file=document_path, force_document=True)
+
+    # 发送剩余的grouped_files（如果有）
+    if grouped_files:
+
+            await client.send_file(target_chat, file=grouped_files, caption=caption, force_document=contains_documents)
+target_chat = os.getenv('TARGET_CHAT')
+###
 async def main():
     """
     主程序：从指定频道获取消息并保存到 JSON 文件中。
@@ -220,6 +290,26 @@ async def main():
     # 导出消息到 JSON 文件
     await export_to_json('channel_messages.json', all_messages)
 
+    ##
+    with open('channel_messages.json', 'r') as file:
+        json_data = json.load(file) 
+    await process_and_send_messages(client, json_data, target_chat)
+
 # 当该脚本作为主程序运行时
 if __name__ == '__main__':
     client.loop.run_until_complete(main())
+ 
+import os
+import shutil
+
+# 定义要删除的文件夹名称
+folder_name = 'content'
+
+# 检查文件夹是否存在
+if os.path.exists(folder_name):
+    # 使用 shutil.rmtree 删除文件夹及其所有内容
+    shutil.rmtree(folder_name)
+    print(f'Folder "{folder_name}" and all its contents have been deleted.')
+else:
+    print(f'Folder "{folder_name}" does not exist.')
+
