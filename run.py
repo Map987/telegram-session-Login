@@ -26,6 +26,7 @@ STRING = os.getenv('STRING')
 TELEGRAM_API_HASH = os.getenv('TELEGRAM_API_HASH')    
 TELEGRAM_API_ID = os.getenv('TELEGRAM_API_ID')    
 CHANNEL_USERNAME = os.getenv('CHANNEL_USERNAME')
+
 string = STRING
 
 TELEGRAM_API_ID= TELEGRAM_API_ID
@@ -48,13 +49,9 @@ def default_serializer(obj):
     if isinstance(obj, PeerUser):
         return str(obj)  # 或者返回你希望存储的任何其他信息
     raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
-STRING
-TELEGRAM_API_ID 
 import json
 from cryptography.fernet import Fernet
 import os
-CHANNEL_USERNAME
-TELEGRAM_API_HASH
 async def export_to_json(filename, data):
     encryption_key = os.getenv('TELEGRAM_API_HASH')
     # 如果没有提供密钥，则抛出异常
