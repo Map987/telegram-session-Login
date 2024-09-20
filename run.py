@@ -294,7 +294,6 @@ async def main():
 # 当该脚本作为主程序运行时
 if __name__ == '__main__':
     client.loop.run_until_complete(main())
- 
 import os
 import shutil
 
@@ -308,4 +307,3 @@ if os.path.exists(folder_name):
     print(f'Folder "{folder_name}" and all its contents have been deleted.')
 else:
     print(f'Folder "{folder_name}" does not exist.')
-
