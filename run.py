@@ -21,12 +21,9 @@ import os
 from datetime import datetime
 import time
 import urllib.parse
- 
 import os
-
 # 定义要创建的文件夹名称
 folder_name = 'content'
-
 # 检查文件夹是否已存在
 if not os.path.exists(folder_name):
     # 创建文件夹
@@ -40,7 +37,6 @@ STRING = os.getenv('STRING')
 TELEGRAM_API_HASH = os.getenv('TELEGRAM_API_HASH')    
 TELEGRAM_API_ID = os.getenv('TELEGRAM_API_ID')    
 CHANNEL_USERNAME = os.getenv('CHANNEL_USERNAME')
-
 string = STRING
 
 TELEGRAM_API_ID= TELEGRAM_API_ID
