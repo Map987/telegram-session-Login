@@ -62,7 +62,7 @@ def default_serializer(obj):
 import json
 from cryptography.fernet import Fernet
 import os
-async def export_to_json(filename, data):
+
 def default_serializer(obj):
     """处理无法序列化的对象"""
     if isinstance(obj, PeerUser):
