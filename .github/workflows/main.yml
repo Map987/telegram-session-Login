@@ -27,10 +27,10 @@ jobs:
           pip3 install requests beautifulsoup4 lxml asyncio aiohttp nest_asyncio cryptography pycryptodome argparse telethon
       - name: Run
         env:         
-         STRING: ${{ STRING }}
-         TELEGRAM_API_ID: ${{ TELEGRAM_API_ID }}
-         CHANNEL_USERNAME: ${{ CHANNEL_USERNAME }}
-         TELEGRAM_API_HASH: ${{ TELEGRAM_API_HASH }}
+         STRING: ${{ secrets.STRING }}
+         TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
+         CHANNEL_USERNAME: ${{ secrets.CHANNEL_USERNAME }}
+         TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
          
          
         run: TELEGRAM_API_ID=$TELEGRAM_API_ID TELEGRAM_API_HASH=$TELEGRAM_API_HASH CHANNEL_USERNAME=$CHANNEL_USERNAME STRING=$STRING python3 ./run.py --encode_code ${{ secrets.PASSWORD }}
