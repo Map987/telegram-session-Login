@@ -14,8 +14,8 @@ import qrcode
 #from PIL import Image
 import telethon
 from telethon import TelegramClient
-from qrcode import QRCode, constants
-from qrcode.image.pil import PilImage
+#from qrcode import QRCode, constants
+#from qrcode.image.pil import PilImage
 import io
 import os
 from datetime import datetime
