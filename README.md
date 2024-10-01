@@ -297,3 +297,37 @@ async def main():
 async with client:
     client.loop.run_until_complete(main())
 ```
+
+#### 群组 频道 收藏夹 邀请链接填写方式
+`client.send_message(entity='ok', message="ok")` # 注意`entity='ok'`内可以是邀请链接 `t.me/jahaahh` ;可以是频道公开名称链接 比如 t.me/TelethonChat，此时可以直接填写 `TelethonChat` ； 可以是 `me`，代表收藏夹； 可以是频道 / 群组的id 比如`-10051810060`
+
+```
+from telethon import TelegramClient
+from telethon.sessions import StringSession
+
+string = ''
+import nest_asyncio
+nest_asyncio.apply()
+TELEGRAM_API_ID= ""
+TELEGRAM_API_HASH = ""
+
+# 替换以上占位符为您的Telegram API ID和API HASH
+
+session = StringSession(string)
+
+# 创建TelegramClient实例
+client = TelegramClient(session, TELEGRAM_API_ID, TELEGRAM_API_HASH)
+
+from telethon import TelegramClient
+
+async def main():
+  await client.start()
+  await client.send_message(entity='ok', message="ok") # 注意entity='ok'内可以是邀请链接 t.me/jahaahh ;可以是频道公开名称链接 比如 t.me/TelethonChat，此时可以直接填写 TelethonChat ； 可以是 me，代表收藏夹； 可以是频道/组的id 比如-10051810060
+"""
+  async for dialog in client.iter_dialogs():
+        print(dialog.name, 'has ID', dialog.id)
+"""
+ 
+async with client:
+client.loop.run_until_complete(main())
+```
