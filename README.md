@@ -273,4 +273,27 @@ async def main():
 if __name__ == "__main__":
     with client:
         client.loop.run_until_complete(main())
-``
+```
+
+```
+from telethon import TelegramClient
+from telethon.sessions import StringSession
+
+string = ''
+TELEGRAM_API_ID= ""
+TELEGRAM_API_HASH = ""
+
+session = StringSession(string)
+
+# 创建TelegramClient实例
+client = TelegramClient(session, TELEGRAM_API_ID, TELEGRAM_API_HASH)
+
+from telethon import TelegramClient
+
+async def main():
+  await client.start()
+  async for dialog in client.iter_dialogs():
+        print(dialog.name, 'has ID', dialog.id)
+async with client:
+    client.loop.run_until_complete(main())
+```
