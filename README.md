@@ -331,3 +331,78 @@ async def main():
 async with client:
 client.loop.run_until_complete(main())
 ```
+
+### 下载解压文件
+
+```
+import json
+from telethon import TelegramClient
+#import socks
+from telethon import TelegramClient
+from telethon.tl.functions.messages import GetHistoryRequest
+import json
+from telethon import TelegramClient
+from telethon.tl.types import PeerUser
+from telethon.tl.types import MessageEntityTextUrl
+# 设置 TelegramClient，连接到 Telegram API
+from telethon.sync import TelegramClient
+from telethon.sessions import StringSession
+#import qrcode
+#from PIL import Image
+import telethon
+from telethon import TelegramClient
+#from qrcode import QRCode, constants
+#from qrcode.image.pil import PilImage
+import io
+import os
+from datetime import datetime
+import time
+import urllib.parse
+import os
+import asyncio
+from datetime import datetime, timedelta, timezone
+import nest_asyncio
+nest_asyncio.apply()
+user_name = "me"
+string = ''
+TELEGRAM_API_ID= ""
+TELEGRAM_API_HASH = ""
+session = StringSession(string)
+output = "/content"
+# 创建TelegramClient实例
+client = TelegramClient(session, TELEGRAM_API_ID, TELEGRAM_API_HASH)
+async def main():
+  await client.start()
+  print("start")
+  async for message in client.iter_messages(user_name,offset_date=datetime.now(tz=timezone.utc) - timedelta(hours=1),reverse=True):
+    print(message.sender_id, ':', message.text)
+    path = await client.download_media(message.document, output) # 下载文件
+    print(path)
+asyncio.run(main())
+```
+
+```
+import os
+import asyncio
+from datetime import datetime, timedelta
+import pytz
+
+async def main():
+    await client.start()
+    print("start")
+    for file_path in get_files_in_content():
+       # async for message in client.iter_messages(user_name, offset_date=datetime.now(tz=pytz.utc) - timedelta(hours=1), reverse=True):
+            await client.send_file("me", file_path, force_documents=True)  # 发送文件
+            print(file_path)
+
+def get_files_in_content():
+    content_path = '/content/'
+    for root, dirs, files in os.walk(content_path):
+        for file in files:
+            yield os.path.join(root, file) 
+
+asyncio.run(main()) # 包括子文件夹
+```
+
+
+
