@@ -420,3 +420,43 @@ from telethon.tl.functions.users import GetFullUserRequest
 url = (await client(GetFullUserRequest(bot))).full_user.bot_info.menu_button.url # "bot"为bot用户名
 ```
 
+## 发送sticker贴纸，类型表情包
+
+参考 ：
+1 . https://t.me/TelethonChat/553752 
+
+a sticker set has many stickers. you can also fetch the set with `GetStickerSet` › https://tl.telethon.dev/methods/messages/get_sticker_set.html with `InputStickerSetShortName` › https://tl.telethon.dev/constructors/input_sticker_set_short_name.html (shortname) and shortname being `t.me/addstickers/<shortname>` first, and send the Document object in the response's .documents[index] directly with send_file, that's the right way.
+
+or getting file_id for all of the documents as, [telethon.custom.file.File(f).id for f in response.documents]
+
+but i will need a couple years to explain that to you, just don't
+
+2 . https://arabic-telethon.readthedocs.io/en/stable/extra/examples/working-with-messages.html
+
+```
+async def main():
+  await client.start()
+
+  from telethon.tl.functions.messages import GetAllStickersRequest
+  sticker_sets = await client(GetAllStickersRequest(0))
+
+# Choose a sticker set
+  from telethon.tl.functions.messages import GetStickerSetRequest
+  from telethon.tl.types import InputStickerSetID
+  sticker_set = sticker_sets.sets[0]
+  print(sticker_set)
+
+  stickers = await client(GetStickerSetRequest(
+    stickerset=InputStickerSetID(
+        id=sticker_set.id, access_hash=sticker_set.access_hash
+    ), hash=0
+   ))
+  print(stickers)
+
+  await client.send_file('me', stickers.documents[0])
+
+
+async with client:
+ client.loop.run_until_complete(main())
+
+```
