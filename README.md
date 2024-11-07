@@ -431,7 +431,7 @@ or getting file_id for all of the documents as, [telethon.custom.file.File(f).id
 
 but i will need a couple years to explain that to you, just don't
 
-2 . https://arabic-telethon.readthedocs.io/en/stable/extra/examples/working-with-messages.html
+2 . https://arabic-telethon.readthedocs.io/en/stable/extra/examples/working-with-messages.html 或者 https://github.com/LonamiWebs/Telethon/wiki/Sending-more-than-just-messages#sending-stickers
 
 ```
 async def main():
