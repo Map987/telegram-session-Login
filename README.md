@@ -405,11 +405,18 @@ asyncio.run(main()) # 包括子文件夹
 ```
 
 
-参考https://docs.telethon.dev/en/stable/modules/client.html#telethon.client.dialogs.DialogMethods.iter_drafts ：
+草稿、未发送的输入内容，参考https://docs.telethon.dev/en/stable/modules/client.html#telethon.client.dialogs.DialogMethods.iter_drafts ：
 ```
-async for draft in client.iter_drafts(['bot1', 'bot2']): #频道id, "me", 频道名字都可以
+async for draft in client.iter_drafts(['bot1', 'bot2']): #频道id, "me", 频道名字都可以 
     print(draft.text)
 
 ```
 
+获取机器人左侧按钮网页链接，menu button，创建可以使用@botfather进行创建
+
+```
+from telethon.tl.functions.users import GetFullUserRequest
+
+url = (await client(GetFullUserRequest(bot))).full_user.bot_info.menu_button.url # "bot"为bot用户名
+```
 
