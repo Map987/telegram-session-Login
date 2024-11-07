@@ -405,4 +405,11 @@ asyncio.run(main()) # 包括子文件夹
 ```
 
 
+参考https://docs.telethon.dev/en/stable/modules/client.html#telethon.client.dialogs.DialogMethods.iter_drafts ：
+```
+async for draft in client.iter_drafts(['bot1', 'bot2']): #频道id, "me", 频道名字都可以
+    print(draft.text)
+
+```
+
 
